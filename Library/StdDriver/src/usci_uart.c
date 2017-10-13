@@ -269,7 +269,7 @@ uint32_t UUART_Open(UUART_T* uuart, uint32_t u32baudrate)
         u32PCLKFreq = CLK_GetPCLK1Freq();
     }  
 
-    /* Caculate baud rate divider */        
+    /* Calculate baud rate divider */        
     u32Div = u32PCLKFreq / u32baudrate;
     u32Tmp = (u32PCLKFreq / u32Div) - u32baudrate;
     u32Tmp2 = u32baudrate - (u32PCLKFreq / (u32Div+1ul));
@@ -420,7 +420,7 @@ uint32_t UUART_Read(UUART_T* uuart, uint8_t *pu8RxBuf, uint32_t u32ReadBytes)
 
     if(u32baudrate != 0ul) {
         
-        /* Caculate baud rate divider */    
+        /* Calculate baud rate divider */    
         u32Div = u32PCLKFreq / u32baudrate;
         u32Tmp = (u32PCLKFreq / u32Div) - u32baudrate;
         u32Tmp2 = u32baudrate - (u32PCLKFreq / (u32Div+1ul));
