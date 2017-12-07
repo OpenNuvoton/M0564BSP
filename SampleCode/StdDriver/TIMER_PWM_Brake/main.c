@@ -77,7 +77,7 @@ void SYS_Init(void)
 
     /* Set PA.8 multi-function pin for Timer0 PWM brake pin */
     SYS->GPA_MFPH &= ~SYS_GPA_MFPH_PA8MFP_Msk;
-    SYS->GPA_MFPH = SYS_GPA_MFPH_PA8MFP_TM_BRAKE0;
+    SYS->GPA_MFPH |= SYS_GPA_MFPH_PA8MFP_TM_BRAKE0;
 }
 
 void UART0_Init(void)
