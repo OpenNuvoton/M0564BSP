@@ -84,30 +84,8 @@ __vector_table
 ;;
     THUMB
     PUBWEAK Reset_Handler   
-    SECTION .text:CODE:REORDER(2)       ; 4 bytes alignment
+    SECTION .text:CODE:REORDER:NOROOT(2)       ; 4 bytes alignment
 Reset_Handler
-        LDR     R0, =0x50000100
-        ; Unlock Register                
-        LDR     R1, =0x59
-        STR     R1, [R0]
-        LDR     R1, =0x16
-        STR     R1, [R0]
-        LDR     R1, =0x88
-        STR     R1, [R0]
-        
-        ; Init POR
-        LDR     R2, =0x50000024
-        LDR     R1, =0x00005AA5
-        STR     R1, [R2]
-
-        ; Disable NMI (Assign to reserved IRQ)
-        LDR     R2, =0x50000380
-        LDR     R1, =0x0000001F
-        STR     R1, [R2]
-
-        ; Lock register
-        MOVS    R1, #0
-        STR     R1, [R0]                
 
         LDR      R0, =SystemInit
         BLX      R0
@@ -146,7 +124,9 @@ Reset_Handler
     PUBWEAK ADC_IRQHandler
     PUBWEAK CLKDIRC_IRQHandler
     PUBWEAK RTC_IRQHandler  
-    SECTION .text:CODE:REORDER(2)
+    
+    SECTION .text:CODE:REORDER:NOROOT(2)
+    
 HardFault_Handler 
 NMI_Handler       
 SVC_Handler       
