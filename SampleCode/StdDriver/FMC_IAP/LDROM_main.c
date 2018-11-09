@@ -14,6 +14,13 @@
 #define PLLCTL_SETTING  CLK_PLLCTL_72MHz_HXT
 #define PLL_CLOCK       72000000
 
+#if defined ( __GNUC__ )
+#define printf PutString
+#else
+char GetChar(void);
+#endif
+
+
 void SYS_Init(void)
 {
     /*---------------------------------------------------------------------------------------------------------*/
@@ -60,6 +67,53 @@ void UART_Init()
     UART_Open(UART0, 115200);
 }
 
+
+#if defined ( __GNUC__ )
+
+
+/**
+ * @brief    Routine to get a char
+ * @param    None
+ * @returns  Get value from UART debug port or semihost
+ * @details  Wait UART debug port or semihost to input a char.
+ */
+static char GetChar(void)
+{
+    while(1)
+    {
+        if ((UART0->FIFOSTS & UART_FIFOSTS_RXEMPTY_Msk) == 0)
+        {
+            return (UART0->DAT);
+        }
+    }
+}
+
+/*
+ * @returns     Send value from UART debug port
+ * @details     Send a target char to UART debug port .
+ */
+static void SendChar_ToUART(int ch)
+{
+    while (UART0->FIFOSTS & UART_FIFOSTS_TXFULL_Msk);
+
+    UART0->DAT = ch;
+    if(ch == '\n')
+    {
+        while (UART0->FIFOSTS & UART_FIFOSTS_TXFULL_Msk);
+        UART0->DAT = '\r';
+    }
+}
+
+static void PutString(char *str)
+{
+    while (*str != '\0')
+    {
+        SendChar_ToUART(*str++);
+    }
+}
+#endif
+
+
 int main()
 {
     /* Unlock protected register */
@@ -75,7 +129,7 @@ int main()
     FMC_Open();
 
     printf("\n\nPress any key to branch to APROM...\n");
-    getchar();
+    GetChar();
 
     printf("\n\nChange VECMAP and branch to LDROM...\n");
     UART_WAIT_TX_EMPTY(UART0);

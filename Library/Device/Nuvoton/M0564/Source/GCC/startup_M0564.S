@@ -9,7 +9,7 @@
 
 
     .syntax unified
-    .arch   armv8 - m.base
+    .arch   armv6 - m
     
     .section .stack
     .align  3
@@ -314,7 +314,7 @@ Default_Handler:
 SH_DoCommand:
     
     BKPT   0xAB                /* ; Wait ICE or HardFault */
-    LDR    R3, = SH_Return
+    //LDR    R3, = SH_Return
     MOV    R4, lr
     BLX    R3                  /* ; Call SH_Return. The return value is in R0 */
     BX     R4                  /* ; Return value = R0 */

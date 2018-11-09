@@ -28,7 +28,7 @@ uint8_t DestArray[64];
 volatile int32_t IntCnt;
 volatile int32_t IsTestOver;
 volatile uint32_t g_u32TwoChannelPdmaTest = 0;
-extern char GetChar(void);
+
 
 /*---------------------------------------------------------------------------------------------------------*/
 /* Define functions prototype                                                                              */

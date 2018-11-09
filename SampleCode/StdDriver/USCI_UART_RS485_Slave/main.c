@@ -35,7 +35,6 @@ volatile uint8_t u8ReceiveDone = 0;
 /*---------------------------------------------------------------------------------------------------------*/
 /* Define functions prototype                                                                              */
 /*---------------------------------------------------------------------------------------------------------*/
-extern char GetChar(void);
 void RS485_HANDLE(void);
 void RS485_9bitModeSlave(void);
 void RS485_FunctionTest(void);
