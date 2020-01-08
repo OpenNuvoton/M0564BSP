@@ -1157,7 +1157,7 @@ void PWM_DisableSyncPinInverse(PWM_T *pwm)
  */
 void PWM_SetClockSource(PWM_T *pwm, uint32_t u32ChannelNum, uint32_t u32ClkSrcSel)
 {
-    (pwm)->CLKSRC = (pwm)->CLKSRC & ~(PWM_CLKSRC_ECLKSRC0_Msk << ((u32ChannelNum >> 1) << 3)) | \
+    (pwm)->CLKSRC = ((pwm)->CLKSRC & ~(PWM_CLKSRC_ECLKSRC0_Msk << ((u32ChannelNum >> 1) << 3))) | \
                     (u32ClkSrcSel << ((u32ChannelNum >> 1) << 3));
 }
 
