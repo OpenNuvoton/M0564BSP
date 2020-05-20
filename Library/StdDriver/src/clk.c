@@ -6,6 +6,7 @@
  * @brief    M0564 series Clock Controller (CLK) driver source file
  *
  * @note
+ * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 #include "M0564.h"
