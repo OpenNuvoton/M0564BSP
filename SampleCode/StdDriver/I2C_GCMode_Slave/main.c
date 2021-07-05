@@ -147,6 +147,9 @@ void SYS_Init(void)
     /* Set PD multi-function pins for I2C0 SDA and SCL */
     SYS->GPD_MFPL &= ~(SYS_GPD_MFPL_PD4MFP_Msk | SYS_GPD_MFPL_PD5MFP_Msk);
     SYS->GPD_MFPL |= (SYS_GPD_MFPL_PD4MFP_I2C0_SDA | SYS_GPD_MFPL_PD5MFP_I2C0_SCL);
+
+    /* I2C pins enable schmitt trigger */
+    PD->SMTEN |= (GPIO_SMTEN_SMTEN4_Msk | GPIO_SMTEN_SMTEN5_Msk);
 }
 
 

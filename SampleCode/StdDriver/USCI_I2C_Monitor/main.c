@@ -13,9 +13,9 @@
 
 #define PLL_CLOCK       48000000
 #if 0
-	#define DbgPrintf  printf
+#define DbgPrintf  printf
 #else
-	#define DbgPrintf(...)
+#define DbgPrintf(...)
 #endif
 
 
@@ -25,18 +25,18 @@
 
 enum UI2C_Monitor_State
 {
-	  GET_Mon_START = 1, 
-	  GET_Mon_ACK, 
-	  GET_Mon_SLV_W, 
-	  GET_Mon_Data, 
-	  GET_Mon_RESTART, 
-	  GET_Mon_SLV_R, 
-	  GET_MON_NACK, 
-	  GET_MON_STOP
+    GET_Mon_START = 1,
+    GET_Mon_ACK,
+    GET_Mon_SLV_W,
+    GET_Mon_Data,
+    GET_Mon_RESTART,
+    GET_Mon_SLV_R,
+    GET_MON_NACK,
+    GET_MON_STOP
 };
 
 /********************************************/
-/*           User Configuation              */          
+/*           User Configuation              */
 /********************************************/
 #define I2C_ENABLE 1
 #define SCLOUT_ENABLE 1
@@ -44,7 +44,7 @@ enum UI2C_Monitor_State
 #define MONITOR_ADDR 0x16
 volatile uint8_t g_au8TxData[I2C_DATA_MAX];
 /********************************************/
-/*           User Configuation End          */          
+/*           User Configuation End          */
 /********************************************/
 
 
@@ -56,7 +56,7 @@ volatile uint8_t g_u8MstEndFlag = 0;
 volatile uint32_t slave_buff_addr;
 volatile uint8_t g_u8MstDataLen;
 volatile uint8_t g_u8SlvDataLen;
-volatile uint32_t g_u32ProtOn; 
+volatile uint32_t g_u32ProtOn;
 volatile uint8_t g_u8MonRcvEveryThing = 0;
 volatile uint8_t g_u8MonRecEachState[100] = {0};
 volatile uint8_t g_u8MonRecData[I2C_DATA_MAX] = {0};
@@ -156,7 +156,7 @@ void I2C0_Init(void)
 
     /* Enable I2C0 10-bit address mode */
     //I2C0->CTL1 |= I2C_CTL1_ADDR10EN_Msk;
-    
+
     /* I2C0 bus clock 100K divider setting, I2CLK = PCLK/(100K*4)-1 */
     u32BusClock = 100000;
     I2C0->CLKDIV = (uint32_t)(((g_u32PCLKClock * 10) / (u32BusClock * 4) + 5) / 10 - 1); /* Compute proper divider for I2C clock */
@@ -195,7 +195,7 @@ void I2C1_Init(void)
 
     uint32_t u32BusClock;
     CLK->APBCLK0 |= (CLK_APBCLK0_I2C1CKEN_Msk);
-      
+
 
     /* Set PE multi-function pins for I2C1 SDA and SCL */
     SYS->GPE_MFPL &= ~(SYS_GPE_MFPL_PE5MFP_Msk | SYS_GPE_MFPL_PE4MFP_Msk);
@@ -358,6 +358,10 @@ void SYS_Init(void)
     /* Set PD multi-function pins for UI2C1_SDA(PD.14) and UI2C1_SDA(PD.15) */
     SYS->GPD_MFPH &= ~(SYS_GPD_MFPH_PD14MFP_Msk | SYS_GPD_MFPH_PD15MFP_Msk);
     SYS->GPD_MFPH |= (SYS_GPD_MFPH_PD14MFP_USCI1_DAT0 | SYS_GPD_MFPH_PD15MFP_USCI1_CLK);
+
+    /* I2C pins enable schmitt trigger */
+    PC->SMTEN |= (GPIO_SMTEN_SMTEN4_Msk | GPIO_SMTEN_SMTEN5_Msk);
+    PD->SMTEN |= (GPIO_SMTEN_SMTEN14_Msk | GPIO_SMTEN_SMTEN15_Msk);
 }
 
 void UI2C0_Init(uint32_t u32ClkSpeed)
@@ -411,98 +415,98 @@ void UI2C_SLV_7bit_Monitor(uint32_t u32Status)
     uint32_t rxdata;
 
     if((u32Status & UI2C_PROTSTS_STARIF_Msk) == UI2C_PROTSTS_STARIF_Msk)
-    { 
+    {
         UI2C1->PROTSTS = UI2C_PROTSTS_STARIF_Msk;
-        if(g_u32ProtOn==0) 
-        {           
-					  Mon_Event = GET_Mon_START;
-					  g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;
+        if(g_u32ProtOn==0)
+        {
+            Mon_Event = GET_Mon_START;
+            g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;
             g_u32ProtOn = 1;
-            DbgPrintf("@@ Get STA\n");        
+            DbgPrintf("@@ Get STA\n");
         }
         else
         {
-					  Mon_Event = GET_Mon_RESTART;
-					  g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;					
+            Mon_Event = GET_Mon_RESTART;
+            g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;
             DbgPrintf("@@ Get Re-STA\n");
         }
         s_Event = SLAVE_ADDRESS_ACK;
-        UI2C_SET_CONTROL_REG(UI2C1, UI2C_CTL_AA);        
-        UI2C1->PROTCTL |= UI2C_PROTCTL_PTRG_Msk;        
+        UI2C_SET_CONTROL_REG(UI2C1, UI2C_CTL_AA);
+        UI2C1->PROTCTL |= UI2C_PROTCTL_PTRG_Msk;
     }
     else if((u32Status & UI2C_PROTSTS_ACKIF_Msk) == UI2C_PROTSTS_ACKIF_Msk)
-    {			
-        DbgPrintf("@@ Get ACK\n");         
+    {
+        DbgPrintf("@@ Get ACK\n");
         UI2C1->PROTSTS = UI2C_PROTSTS_ACKIF_Msk;
-				Mon_Event = GET_Mon_ACK;
-				g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;				
+        Mon_Event = GET_Mon_ACK;
+        g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;
         if(s_Event==SLAVE_ADDRESS_ACK)
         {
             if((UI2C1->PROTSTS & UI2C_PROTSTS_SLAREAD_Msk) == UI2C_PROTSTS_SLAREAD_Msk)
             {
-				        Mon_Event = GET_Mon_SLV_R;
-							  g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;	
+                Mon_Event = GET_Mon_SLV_R;
+                g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;
                 rxdata = (unsigned char)(UI2C1->RXDAT);
-							  g_u8MonRecData[g_u8MonCountD++] = rxdata;
+                g_u8MonRecData[g_u8MonCountD++] = rxdata;
                 DbgPrintf("@@ SLV(0x%X)+R\n", rxdata);
                 s_Event = SLAVE_SEND_DATA;
             }
             else
             {
-				        Mon_Event = GET_Mon_SLV_W;
-                g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;								
+                Mon_Event = GET_Mon_SLV_W;
+                g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;
                 rxdata = (unsigned char)(UI2C1->RXDAT);
-							  g_u8MonRecData[g_u8MonCountD++] = rxdata;							
+                g_u8MonRecData[g_u8MonCountD++] = rxdata;
                 DbgPrintf("@@ SLV(0x%X)+W\n", rxdata);
                 s_Event = SLAVE_GET_DATA;
-            } 
+            }
             if(!g_u8MonRcvEveryThing)
             {
                 if(((rxdata>>1) != (UI2C1->DEVADDR0&0xFF)) && ((rxdata>>1) != (UI2C1->DEVADDR1&0xFF)))
                 {
                     //Check Receive Adddress not match
-									  printf("Error...Enter Wrong mode...");
+                    printf("Error...Enter Wrong mode...");
                     while(1);
-                }    
-            }            
-            s_Event=SLAVE_GET_DATA;   
+                }
+            }
+            s_Event=SLAVE_GET_DATA;
         }
         else if(s_Event==SLAVE_GET_DATA)
         {
-				    Mon_Event = GET_Mon_Data;
-					  g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;						
+            Mon_Event = GET_Mon_Data;
+            g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;
             rxdata = (unsigned char)(UI2C1->RXDAT);
-					  g_u8MonRecData[g_u8MonCountD++] = rxdata;					
-            DbgPrintf("@@ Data(0x%X)\n", rxdata);  
+            g_u8MonRecData[g_u8MonCountD++] = rxdata;
+            DbgPrintf("@@ Data(0x%X)\n", rxdata);
         }
-        UI2C_SET_CONTROL_REG(UI2C1, UI2C_CTL_AA);       
-        UI2C1->PROTCTL |= UI2C_PROTCTL_PTRG_Msk;        
+        UI2C_SET_CONTROL_REG(UI2C1, UI2C_CTL_AA);
+        UI2C1->PROTCTL |= UI2C_PROTCTL_PTRG_Msk;
     }
     else if((u32Status & UI2C_PROTSTS_NACKIF_Msk) == UI2C_PROTSTS_NACKIF_Msk)
     {
         UI2C1->PROTSTS = UI2C_PROTSTS_NACKIF_Msk;
-				Mon_Event = GET_MON_NACK;	
-        g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;				
+        Mon_Event = GET_MON_NACK;
+        g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;
         DbgPrintf("[31;5m@@ Get NACK[0m\n");
-				Mon_Event = GET_Mon_Data; 
-        g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;				
+        Mon_Event = GET_Mon_Data;
+        g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;
         rxdata = (unsigned char)(UI2C1->RXDAT);
-				g_u8MonRecData[g_u8MonCountD++] = rxdata;			
-        DbgPrintf("@@ Data(0x%X)\n\n", rxdata); 
+        g_u8MonRecData[g_u8MonCountD++] = rxdata;
+        DbgPrintf("@@ Data(0x%X)\n\n", rxdata);
         //g_u32ProtOn = 0;
-        UI2C_SET_CONTROL_REG(UI2C1, UI2C_CTL_AA);       
-        UI2C1->PROTCTL |= UI2C_PROTCTL_PTRG_Msk;         
+        UI2C_SET_CONTROL_REG(UI2C1, UI2C_CTL_AA);
+        UI2C1->PROTCTL |= UI2C_PROTCTL_PTRG_Msk;
     }
     else if((u32Status & UI2C_PROTSTS_STORIF_Msk) == UI2C_PROTSTS_STORIF_Msk)
     {
         UI2C1->PROTSTS = UI2C_PROTSTS_STORIF_Msk;
-				Mon_Event = GET_MON_STOP;
-        g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;				
-        DbgPrintf("@@ Get STOP\n\n"); 
+        Mon_Event = GET_MON_STOP;
+        g_u8MonRecEachState[g_u8MonCountS++] = Mon_Event;
+        DbgPrintf("@@ Get STOP\n\n");
         g_u32ProtOn = 0;
         s_Event = SLAVE_ADDRESS_ACK;
-        UI2C_SET_CONTROL_REG(UI2C1, UI2C_CTL_AA);       
-        UI2C1->PROTCTL |= UI2C_PROTCTL_PTRG_Msk;         
+        UI2C_SET_CONTROL_REG(UI2C1, UI2C_CTL_AA);
+        UI2C1->PROTCTL |= UI2C_PROTCTL_PTRG_Msk;
     }
 }
 
@@ -515,7 +519,7 @@ void I2C_SlaveTRx_7bit_1(uint32_t u32Status)
     {
         g_u8SlvDataLen = 0;
         g_u8RxDataTmp = (unsigned char)(I2C1->DAT);
-        DbgPrintf("I2CS << RXDAT: 0x%X\n",g_u8RxDataTmp);        
+        DbgPrintf("I2CS << RXDAT: 0x%X\n",g_u8RxDataTmp);
         I2C_SET_CONTROL_REG(I2C1, I2C_CTL_SI_AA);
     }
     else if(u32Status == 0x80)                 /* Previously address with own SLA address
@@ -541,7 +545,7 @@ void I2C_SlaveTRx_7bit_1(uint32_t u32Status)
     {
 
         I2C1->DAT = g_u8SlvData[slave_buff_addr];
-        DbgPrintf("I2CS >> RXDAT: 0x%X\n",g_u8SlvData[slave_buff_addr]);      
+        DbgPrintf("I2CS >> RXDAT: 0x%X\n",g_u8SlvData[slave_buff_addr]);
         slave_buff_addr++;
         I2C_SET_CONTROL_REG(I2C1, I2C_CTL_SI_AA);
     }
@@ -584,20 +588,20 @@ void I2C_MasterTx(uint32_t u32Status)
     else if(u32Status == 0x18)                  /* SLA+W has been transmitted and ACK has been received */
     {
         I2C0->DAT = g_au8TxData[g_u8MstDataLen++];
-        DbgPrintf("I2CM >> 0x%X\n", I2C0->DAT);        
+        DbgPrintf("I2CM >> 0x%X\n", I2C0->DAT);
         I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
     }
     else if(u32Status == 0x20)                  /* SLA+W has been transmitted and NACK has been received */
     {
         I2C_STOP(I2C0);
-        I2C_START(I2C0); 
+        I2C_START(I2C0);
     }
     else if(u32Status == 0x28)                  /* DATA has been transmitted and ACK has been received */
     {
         if(g_u8MstDataLen != I2C_DATA_MAX/*-1*/)
         {
             I2C0->DAT = g_au8TxData[g_u8MstDataLen++];
-            DbgPrintf("I2CM >> 0x%X\n", I2C0->DAT);            
+            DbgPrintf("I2CM >> 0x%X\n", I2C0->DAT);
             I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
         }
         else
@@ -619,27 +623,27 @@ void I2C_MasterRx(uint32_t u32Status)
     if(u32Status == 0x08)                       /* START has been transmitted and prepare SLA+W */
     {
         I2C0->DAT = g_u8DeviceAddr << 1;        /* Write SLA+W to Register I2CDAT */
-        DbgPrintf("I2CM >> 0x%X\n", I2C0->DAT);        
+        DbgPrintf("I2CM >> 0x%X\n", I2C0->DAT);
         I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
     }
     else if(u32Status == 0x18)                  /* SLA+W has been transmitted and ACK has been received */
     {
         I2C0->DAT = g_au8TxData[g_u8MstDataLen++];
-        DbgPrintf("I2CM >> 0x%X\n", I2C0->DAT);        
+        DbgPrintf("I2CM >> 0x%X\n", I2C0->DAT);
         I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
     }
     else if(u32Status == 0x20)                  /* SLA+W has been transmitted and NACK has been received */
     {
         I2C_STOP(I2C0);
-        I2C_START(I2C0);        
+        I2C_START(I2C0);
     }
     else if(u32Status == 0x28)                  /* DATA has been transmitted and ACK has been received */
     {
         if(g_u8MstDataLen != (I2C_DATA_MAX - 2) )
         {
             I2C0->DAT = g_au8TxData[g_u8MstDataLen++];
-					  
-            DbgPrintf("I2CM >> 0x%X\n", I2C0->DAT);            
+
+            DbgPrintf("I2CM >> 0x%X\n", I2C0->DAT);
             I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
         }
         else
@@ -650,7 +654,7 @@ void I2C_MasterRx(uint32_t u32Status)
     else if(u32Status == 0x10)                  /* Repeat START has been transmitted and prepare SLA+R */
     {
         I2C0->DAT = ((g_u8DeviceAddr << 1) | 0x01);   /* Write SLA+R to Register I2CDAT */
-        DbgPrintf("I2CM >> 0x%X\n", I2C0->DAT);        
+        DbgPrintf("I2CM >> 0x%X\n", I2C0->DAT);
         I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
     }
     else if(u32Status == 0x40)                  /* SLA+R has been transmitted and ACK has been received */
@@ -660,7 +664,7 @@ void I2C_MasterRx(uint32_t u32Status)
     else if(u32Status == 0x58)                  /* DATA has been received and NACK has been returned */
     {
         g_u8RxData = I2C0->DAT;
-        DbgPrintf("I2CM << 0x%X\n", g_u8RxData);        
+        DbgPrintf("I2CM << 0x%X\n", g_u8RxData);
         I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STO_SI);
         g_u8EndFlagM = 1;
     }
@@ -676,40 +680,40 @@ int32_t Read_Write_SLAVE_Mon(uint8_t slvaddr)
 {
     uint32_t i;
 
-	
+
     g_u8DeviceAddr = slvaddr;
 
-		for(i = 0; i< I2C_DATA_MAX; i++)
-		{
-			g_au8TxData[i] = 5 + i;
-		}
+    for(i = 0; i< I2C_DATA_MAX; i++)
+    {
+        g_au8TxData[i] = 5 + i;
+    }
 
-		g_u8MonCountS = 0;
-		g_u8MonCountD = 0;				
-		g_u8MstDataLen = 0;
-		g_u8EndFlagM = 0;
+    g_u8MonCountS = 0;
+    g_u8MonCountD = 0;
+    g_u8MstDataLen = 0;
+    g_u8EndFlagM = 0;
 
-		/* I2C function to write data to slave */
-		s_I2C0HandlerFn = (I2C_FUNC)I2C_MasterTx;
+    /* I2C function to write data to slave */
+    s_I2C0HandlerFn = (I2C_FUNC)I2C_MasterTx;
 
-		/* I2C as master sends START signal */
-		I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA);
+    /* I2C as master sends START signal */
+    I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA);
 
-		/* Wait I2C Tx Finish */
-		while(g_u8EndFlagM == 0);
-		g_u8EndFlagM = 0;
+    /* Wait I2C Tx Finish */
+    while(g_u8EndFlagM == 0);
+    g_u8EndFlagM = 0;
 
-		/* I2C function to read data from slave */
-		s_I2C0HandlerFn = (I2C_FUNC)I2C_MasterRx;
+    /* I2C function to read data from slave */
+    s_I2C0HandlerFn = (I2C_FUNC)I2C_MasterRx;
 
-		g_u8MstDataLen = 0;
-		g_u8DeviceAddr = slvaddr;
+    g_u8MstDataLen = 0;
+    g_u8DeviceAddr = slvaddr;
 
-		I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA);
+    I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA);
 
-		/* Wait I2C Rx Finish */
-		while(g_u8EndFlagM == 0);
-		while(g_u32ProtOn);
+    /* Wait I2C Rx Finish */
+    while(g_u8EndFlagM == 0);
+    while(g_u32ProtOn);
 
 
     return 0;
@@ -720,68 +724,68 @@ int32_t Read_Write_SLAVE_Mon(uint8_t slvaddr)
 
 int32_t UI2C_Monitor_7bit_test()
 {
-	  int32_t err = 0;
+    int32_t err = 0;
     uint32_t i;
-    
-     
-        //USCI1 be a Slave    
-        s_Event = SLAVE_ADDRESS_ACK;
-        
-     
-#if SCLOUT_ENABLE       
-        UI2C1->PROTCTL |= (UI2C_PROTCTL_MONEN_Msk | UI2C_PROTCTL_SCLOUTEN_Msk);        
-#else        
-        UI2C1->PROTCTL |= UI2C_PROTCTL_MONEN_Msk; 
-#endif        
-        UI2C_SET_CONTROL_REG(UI2C1, UI2C_CTL_AA);
-        for(i = 0; i < 0x100; i++)
-        {
-            g_u8SlvData[i] = 0;
-        }   
-        g_u32ProtOn = 0;  
-        g_u8MonRcvEveryThing = 0;
-		
-			
-        /* I2C function to Slave receive/transmit data */
-        s_UI2C1HandlerFn = UI2C_SLV_7bit_Monitor;         
-        DbgPrintf("I2C1 Slave Mode is Running.\n");        
 
-#if I2C_ENABLE				
-        I2C1_Init();  
-        /* I2C1 enter no address SLV mode */
-        I2C_SET_CONTROL_REG(I2C1, I2C_CTL_SI_AA);     
-        for(i = 0; i < 0x100; i++)
-        {
-            g_u8SlvData[i] = 0;
-        }     
-        /* I2C function to Slave receive/transmit data */
-        s_I2C1HandlerFn = I2C_SlaveTRx_7bit_1;
-        
-        /* I2C IP as Master */
-        I2C0_Init();
-					
-        err = Read_Write_SLAVE_Mon(MONITOR_ADDR);
+
+    //USCI1 be a Slave
+    s_Event = SLAVE_ADDRESS_ACK;
+
+
+#if SCLOUT_ENABLE
+    UI2C1->PROTCTL |= (UI2C_PROTCTL_MONEN_Msk | UI2C_PROTCTL_SCLOUTEN_Msk);
+#else
+    UI2C1->PROTCTL |= UI2C_PROTCTL_MONEN_Msk;
 #endif
-				
-				printf("\nDump Monitor data: \n");		
-				for(i = 0; i<(I2C_DATA_MAX+1); i++)
-				{
-					  if(i == 0)
-							printf("Monitor address: [0x%X]", g_u8MonRecData[i]>>1);
-						else
-							printf("[0x%X]\t", g_u8MonRecData[i]);
-						
-						if(i % 8 == 0)
-							printf("\n");
-				}
-				printf("\n\n");
+    UI2C_SET_CONTROL_REG(UI2C1, UI2C_CTL_AA);
+    for(i = 0; i < 0x100; i++)
+    {
+        g_u8SlvData[i] = 0;
+    }
+    g_u32ProtOn = 0;
+    g_u8MonRcvEveryThing = 0;
+
+
+    /* I2C function to Slave receive/transmit data */
+    s_UI2C1HandlerFn = UI2C_SLV_7bit_Monitor;
+    DbgPrintf("I2C1 Slave Mode is Running.\n");
+
+#if I2C_ENABLE
+    I2C1_Init();
+    /* I2C1 enter no address SLV mode */
+    I2C_SET_CONTROL_REG(I2C1, I2C_CTL_SI_AA);
+    for(i = 0; i < 0x100; i++)
+    {
+        g_u8SlvData[i] = 0;
+    }
+    /* I2C function to Slave receive/transmit data */
+    s_I2C1HandlerFn = I2C_SlaveTRx_7bit_1;
+
+    /* I2C IP as Master */
+    I2C0_Init();
+
+    err = Read_Write_SLAVE_Mon(MONITOR_ADDR);
+#endif
+
+    printf("\nDump Monitor data: \n");
+    for(i = 0; i<(I2C_DATA_MAX+1); i++)
+    {
+        if(i == 0)
+            printf("Monitor address: [0x%X]", g_u8MonRecData[i]>>1);
+        else
+            printf("[0x%X]\t", g_u8MonRecData[i]);
+
+        if(i % 8 == 0)
+            printf("\n");
+    }
+    printf("\n\n");
 
 
 
-				for(i = 0; i<I2C_DATA_MAX; i++)
-					  g_u8MonRecData[i] = 0;
+    for(i = 0; i<I2C_DATA_MAX; i++)
+        g_u8MonRecData[i] = 0;
 
-        return err;   
+    return err;
 }
 
 
@@ -820,7 +824,7 @@ int main()
     printf("The I/O connection I2C0 to I2C1:\n");
     printf("I2C0_SDA(PD.4), I2C0_SCL(PD.5)\n");
     printf("I2C1_SDA(PE.5), I2C1_SCL(PE.4)\n\n");
-		
+
     /* Init USCI_I2C0 and USCI_I2C1 */
     UI2C0_Init(100000);
     UI2C1_Init(100000);
@@ -829,14 +833,14 @@ int main()
     s_Event = SLAVE_ADDRESS_ACK;
 
     UI2C_SET_CONTROL_REG(UI2C1, (UI2C_CTL_PTRG | UI2C_CTL_AA));
-		
-		while(1)
-		{	
-				printf("Monitor test ....\n");
-				UI2C_Monitor_7bit_test();
-				printf("Press any key to continue\n");
-				getchar();
-		}
+
+    while(1)
+    {
+        printf("Monitor test ....\n");
+        UI2C_Monitor_7bit_test();
+        printf("Press any key to continue\n");
+        getchar();
+    }
 
 }
 
