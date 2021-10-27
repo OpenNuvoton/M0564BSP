@@ -134,7 +134,6 @@ void SYS_ResetCPU(void)
   *             - \ref ACMP01_RST
   *             - \ref PWM0_RST
   *             - \ref PWM1_RST
-  *             - \ref USBD_RST
   *             - \ref SC0_RST
   *             - \ref SC1_RST
   *             - \ref USCI0_RST

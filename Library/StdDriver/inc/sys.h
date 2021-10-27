@@ -54,7 +54,6 @@ extern "C"
 #define PWM0_RST    ((0x4<<24)|SYS_IPRST1_PWM0RST_Pos)      /*!< PWM0 reset is one of the SYS_ResetModule parameter */
 #define PWM1_RST    ((0x4<<24)|SYS_IPRST1_PWM1RST_Pos)      /*!< PWM1 reset is one of the SYS_ResetModule parameter */
 #define ACMP01_RST  ((0x4<<24)|SYS_IPRST1_ACMP01RST_Pos)    /*!< ACMP01 reset is one of the SYS_ResetModule parameter */
-#define USBD_RST    ((0x4<<24)|SYS_IPRST1_USBDRST_Pos)      /*!< USBD reset is one of the SYS_ResetModule parameter */
 #define ADC_RST     ((0x4<<24)|SYS_IPRST1_ADCRST_Pos)       /*!< ADC reset is one of the SYS_ResetModule parameter */
 
 #define SC0_RST     ((0x8<<24)|SYS_IPRST2_SC0RST_Pos)       /*!< SC0 reset is one of the SYS_ResetModule parameter */
@@ -154,7 +153,7 @@ Example: If user want to set PA.2 as UART0_TXD and PA.3 as UART0_RXD in initial 
 //PA.6 MFP
 #define SYS_GPA_MFPL_PA6MFP_GPIO            (0x0UL<<SYS_GPA_MFPL_PA6MFP_Pos)    /*!< GPA_MFPL PA6 setting for GPIO           */
 #define SYS_GPA_MFPL_PA6MFP_SPI1_MISO       (0x2UL<<SYS_GPA_MFPL_PA6MFP_Pos)    /*!< GPA_MFPL PA6 setting for SPI1_MISO      */
-#define SYS_GPA_MFPL_PA6MFP_TM1_EXT         (0x3UL<<SYS_GPA_MFPL_PA6MFP_Pos)   /*!< GPA_MFPL PA6 setting for TM1_EXT         */
+#define SYS_GPA_MFPL_PA6MFP_TM1_EXT         (0x3UL<<SYS_GPA_MFPL_PA6MFP_Pos)    /*!< GPA_MFPL PA6 setting for TM1_EXT        */
 #define SYS_GPA_MFPL_PA6MFP_TM_BRAKE2       (0x6UL<<SYS_GPA_MFPL_PA6MFP_Pos)    /*!< GPA_MFPL PA6 setting for TM_BRAKE2      */
 #define SYS_GPA_MFPL_PA6MFP_EBI_AD6         (0x7UL<<SYS_GPA_MFPL_PA6MFP_Pos)    /*!< GPA_MFPL PA6 setting for EBI_AD6        */
 
@@ -214,7 +213,7 @@ Example: If user want to set PA.2 as UART0_TXD and PA.3 as UART0_RXD in initial 
 #define SYS_GPA_MFPH_PA14MFP_GPIO           (0x0UL<<SYS_GPA_MFPH_PA14MFP_Pos)   /*!< GPA_MFPH PA14 setting for GPIO          */
 #define SYS_GPA_MFPH_PA14MFP_UART2_nCTS     (0x3UL<<SYS_GPA_MFPH_PA14MFP_Pos)   /*!< GPA_MFPH PA14 setting for UART2_nCTS    */
 #define SYS_GPA_MFPH_PA14MFP_USCI1_CTL1     (0x4UL<<SYS_GPA_MFPH_PA14MFP_Pos)   /*!< GPA_MFPH PA14 setting for USCI1_CTL1    */
-#define SYS_GPA_MFPH_PA14MFP_TM2             (0x6UL<<SYS_GPA_MFPH_PA14MFP_Pos)   /*!< GPA_MFPH PA14 setting for TM2   */
+#define SYS_GPA_MFPH_PA14MFP_TM2            (0x6UL<<SYS_GPA_MFPH_PA14MFP_Pos)   /*!< GPA_MFPH PA14 setting for TM2           */
 
 //PA.15 MFP
 #define SYS_GPA_MFPH_PA15MFP_GPIO           (0x0UL<<SYS_GPA_MFPH_PA15MFP_Pos)   /*!< GPA_MFPH PA15 setting for GPIO          */
@@ -232,6 +231,7 @@ Example: If user want to set PA.2 as UART0_TXD and PA.3 as UART0_RXD in initial 
 #define SYS_GPB_MFPL_PB0MFP_EBI_nWRL        (0x7UL<<SYS_GPB_MFPL_PB0MFP_Pos)    /*!< GPB_MFPL PB0 setting for EBI_nWRL       */
 #define SYS_GPB_MFPL_PB0MFP_INT1            (0x8UL<<SYS_GPB_MFPL_PB0MFP_Pos)    /*!< GPB_MFPL PB0 setting for INT1           */
 #define SYS_GPB_MFPL_PB0MFP_TM1_EXT         (0xAUL<<SYS_GPB_MFPL_PB0MFP_Pos)    /*!< GPB_MFPL PB0 setting for TM1_EXT        */
+
 //PB.1 MFP
 #define SYS_GPB_MFPL_PB1MFP_GPIO            (0x0UL<<SYS_GPB_MFPL_PB1MFP_Pos)    /*!< GPB_MFPL PB1 setting for GPIO           */
 #define SYS_GPB_MFPL_PB1MFP_ADC0_CH1        (0x1UL<<SYS_GPB_MFPL_PB1MFP_Pos)    /*!< GPB_MFPL PB1 setting for ADC0_CH1       */
