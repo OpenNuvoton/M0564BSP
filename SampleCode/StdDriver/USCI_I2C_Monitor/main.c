@@ -36,7 +36,7 @@ enum UI2C_Monitor_State
 };
 
 /********************************************/
-/*           User Configuation              */
+/*           User Configuration             */
 /********************************************/
 #define I2C_ENABLE 1
 #define SCLOUT_ENABLE 1
@@ -44,7 +44,7 @@ enum UI2C_Monitor_State
 #define MONITOR_ADDR 0x16
 volatile uint8_t g_au8TxData[I2C_DATA_MAX];
 /********************************************/
-/*           User Configuation End          */
+/*           User Configuration End         */
 /********************************************/
 
 
@@ -464,9 +464,9 @@ void UI2C_SLV_7bit_Monitor(uint32_t u32Status)
             {
                 if(((rxdata>>1) != (UI2C1->DEVADDR0&0xFF)) && ((rxdata>>1) != (UI2C1->DEVADDR1&0xFF)))
                 {
-                    //Check Receive Adddress not match
+                    //Check Receive Address not match
                     printf("Error...Enter Wrong mode...");
-                    while(1);
+                    return;
                 }
             }
             s_Event=SLAVE_GET_DATA;
@@ -678,8 +678,7 @@ void I2C_MasterRx(uint32_t u32Status)
 
 int32_t Read_Write_SLAVE_Mon(uint8_t slvaddr)
 {
-    uint32_t i;
-
+    uint32_t i, u32TimeOutCnt;
 
     g_u8DeviceAddr = slvaddr;
 
@@ -700,7 +699,15 @@ int32_t Read_Write_SLAVE_Mon(uint8_t slvaddr)
     I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA);
 
     /* Wait I2C Tx Finish */
-    while(g_u8EndFlagM == 0);
+    u32TimeOutCnt = UI2C_TIMEOUT;
+    while(g_u8EndFlagM == 0)
+    {
+        if(--u32TimeOutCnt == 0)
+        {
+            printf("Wait for USCI_I2C Tx finish time-out!\n");
+            return -1;
+        }
+    }
     g_u8EndFlagM = 0;
 
     /* I2C function to read data from slave */
@@ -712,9 +719,15 @@ int32_t Read_Write_SLAVE_Mon(uint8_t slvaddr)
     I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA);
 
     /* Wait I2C Rx Finish */
-    while(g_u8EndFlagM == 0);
-    while(g_u32ProtOn);
-
+    u32TimeOutCnt = UI2C_TIMEOUT;
+    while( (g_u8EndFlagM == 0) || (g_u32ProtOn) )
+    {
+        if(--u32TimeOutCnt == 0)
+        {
+            printf("Wait for USCI_I2C Rx finish time-out!\n");
+            return -1;
+        }
+    }
 
     return 0;
 }

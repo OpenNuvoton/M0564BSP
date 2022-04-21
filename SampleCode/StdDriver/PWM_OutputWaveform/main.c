@@ -101,7 +101,7 @@ void SYS_Init(void)
     SYS->GPC_MFPL = (SYS->GPC_MFPL & (~SYS_GPC_MFPL_PC5MFP_Msk));
     SYS->GPC_MFPL |= SYS_GPC_MFPL_PC5MFP_PWM0_CH5;
 
-    /* Set PA and PC multi-function pins for PWM1 Channel0~5 */
+    /* Set PA and PC multi-function pins for PWM1 Channel 0~5 */
     SYS->GPC_MFPL = (SYS->GPC_MFPL & (~SYS_GPC_MFPL_PC6MFP_Msk));
     SYS->GPC_MFPL |= SYS_GPC_MFPL_PC6MFP_PWM1_CH0;
     SYS->GPC_MFPL = (SYS->GPC_MFPL & (~SYS_GPC_MFPL_PC7MFP_Msk));

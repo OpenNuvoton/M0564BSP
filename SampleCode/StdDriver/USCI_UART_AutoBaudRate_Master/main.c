@@ -5,7 +5,7 @@
  * $Date: 16/10/17 2:07p $
  * @brief
  *           Show how to use auto baud rate detection function.
- *           This sample code needs to work with UART_AutoBaudRate_Slave.
+ *           This sample code needs to work with USCI_UART_AutoBaudRate_Slave.
  * @note
  * Copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
  *

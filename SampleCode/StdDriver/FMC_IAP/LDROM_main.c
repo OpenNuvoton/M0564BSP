@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include "M0564.h"
 
-#define PLLCTL_SETTING  CLK_PLLCTL_72MHz_HXT
 #define PLL_CLOCK       72000000
 
 #if defined ( __GNUC__ )
@@ -116,6 +115,8 @@ static void PutString(char *str)
 
 int main()
 {
+    uint32_t u32TimeOutCnt;
+
     /* Unlock protected register */
     SYS_UnlockReg();
 
@@ -132,7 +133,9 @@ int main()
     GetChar();
 
     printf("\n\nChange VECMAP and branch to LDROM...\n");
-    UART_WAIT_TX_EMPTY(UART0);
+    u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+    UART_WAIT_TX_EMPTY(UART0)
+        if(--u32TimeOutCnt == 0) break;
 
     /* Mask all interrupt before changing VECMAP to avoid wrong interrupt handler fetched */
     __set_PRIMASK(1);

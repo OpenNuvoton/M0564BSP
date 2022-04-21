@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include "M0564.h"
 
-#define PLLCTL_SETTING  CLK_PLLCTL_72MHz_HXT
 #define PLL_CLOCK       72000000
 
 #define SLV_10BIT_ADDR (0x1E<<2)             //1111+0xx+r/w
@@ -288,7 +287,7 @@ void UI2C0_Init(uint32_t u32ClkSpeed)
 
 int32_t Read_Write_SLAVE(uint16_t slvaddr)
 {
-    uint32_t i;
+    uint32_t i, u32TimeOutCnt;
 
     /* Init Send 10-bit Addr */
     g_u8DeviceHAddr = (slvaddr >> 8) | SLV_10BIT_ADDR;
@@ -311,7 +310,15 @@ int32_t Read_Write_SLAVE(uint16_t slvaddr)
         UI2C_SET_CONTROL_REG(UI2C0, UI2C_CTL_STA);
 
         /* Wait USCI_I2C Tx Finish */
-        while(g_u8MstEndFlag == 0);
+        u32TimeOutCnt = UI2C_TIMEOUT;
+        while(g_u8MstEndFlag == 0)
+        {
+            if(--u32TimeOutCnt == 0)
+            {
+                printf("Wait for USCI_I2C Tx finish time-out!\n");
+                return -1;
+            }
+        }
         g_u8MstEndFlag = 0;
 
         /* USCI_I2C function to read data from slave */
@@ -324,7 +331,15 @@ int32_t Read_Write_SLAVE(uint16_t slvaddr)
         UI2C_SET_CONTROL_REG(UI2C0, UI2C_CTL_STA);
 
         /* Wait USCI_I2C Rx Finish */
-        while(g_u8MstEndFlag == 0);
+        u32TimeOutCnt = UI2C_TIMEOUT;
+        while(g_u8MstEndFlag == 0)
+        {
+            if(--u32TimeOutCnt == 0)
+            {
+                printf("Wait for USCI_I2C Rx time-out!\n");
+                return -1;
+            }
+        }
         g_u8MstEndFlag = 0;
 
         /* Compare data */

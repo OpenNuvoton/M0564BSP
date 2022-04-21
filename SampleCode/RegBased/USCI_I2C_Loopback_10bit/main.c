@@ -146,7 +146,7 @@ void UI2C_MasterRx(uint32_t u32Status)
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
-/*  USCI_I2C0 Tx Callback Function                                                                          */
+/*  USCI_I2C0 Tx Callback Function                                                                         */
 /*---------------------------------------------------------------------------------------------------------*/
 void UI2C_MasterTx(uint32_t u32Status)
 {
@@ -408,11 +408,11 @@ void UI2C0_Init(uint32_t u32ClkSpeed)
     UI2C0->BRGEN |= (u32Clkdiv << UI2C_BRGEN_CLKDIV_Pos);
 
 
-    /* Set UI2C1 Slave Addresses */
+    /* Set UI2C0 Slave Addresses */
     UI2C0->DEVADDR0 = 0x015;   /* Slave Address : 0x015 */
     UI2C0->DEVADDR1 = 0x035;   /* Slave Address : 0x035 */
 
-    /* Set UI2C1 Slave Addresses Msk */
+    /* Set UI2C0 Slave Addresses Msk */
     UI2C0->ADDRMSK0 = 0x1;   /* Slave Address : 0x1 */
     UI2C0->ADDRMSK1 = 0x4;   /* Slave Address : 0x4 */
 
@@ -478,7 +478,7 @@ void UART_Init(void)
 
 int32_t Read_Write_SLAVE(uint16_t slvaddr)
 {
-    uint32_t i;
+    uint32_t i, u32TimeOutCnt;
 
     /* Init Send 10-bit Addr */
     g_u8DeviceHAddr = (slvaddr >> 8) | SLV_10BIT_ADDR;
@@ -501,7 +501,15 @@ int32_t Read_Write_SLAVE(uint16_t slvaddr)
         UI2C_SET_CONTROL_REG(UI2C0, UI2C_CTL_STA);
 
         /* Wait USCI_I2C Tx Finish */
-        while(g_u8EndFlagM == 0);
+        u32TimeOutCnt = UI2C_TIMEOUT;
+        while(g_u8EndFlagM == 0)
+        {
+            if(--u32TimeOutCnt == 0)
+            {
+                printf("Wait for USCI_I2C Tx finish time-out!\n");
+                return -1;
+            }
+        }
         g_u8EndFlagM = 0;
 
         /* USCI_I2C function to read data from slave */
@@ -514,7 +522,15 @@ int32_t Read_Write_SLAVE(uint16_t slvaddr)
         UI2C_SET_CONTROL_REG(UI2C0, UI2C_CTL_STA);
 
         /* Wait USCI_I2C Rx Finish */
-        while(g_u8EndFlagM == 0);
+        u32TimeOutCnt = UI2C_TIMEOUT;
+        while(g_u8EndFlagM == 0)
+        {
+            if(--u32TimeOutCnt == 0)
+            {
+                printf("Wait for USCI_I2C Rx finish time-out!\n");
+                return -1;
+            }
+        }
         g_u8EndFlagM = 0;
 
         /* Compare data */

@@ -364,6 +364,7 @@ extern "C"
                         MODULE_CLKSEL_ENC(NA)|MODULE_CLKSEL_Msk_ENC(NA)|MODULE_CLKSEL_Pos_ENC(NA)|\
                         MODULE_CLKDIV_ENC(NA)|MODULE_CLKDIV_Msk_ENC(NA)|MODULE_CLKDIV_Pos_ENC(NA))      /*!< USCI2 Module */
 
+
 /*@}*/ /* end of group CLK_EXPORTED_CONSTANTS */
 
 /** @addtogroup CLK_EXPORTED_FUNCTIONS CLK Exported Functions
@@ -432,7 +433,7 @@ __STATIC_INLINE void CLK_SysTickDelay(uint32_t us)
 
 /**
   * @brief      This function execute long delay function.
-  * @param[in]  us  Delay time. 
+  * @param[in]  us  Delay time.
   * @return     None
   * @details    Use the SysTick to generate the long delay time and the UNIT is in us.
   *             The SysTick clock source is from HCLK, i.e the same as system core clock.
@@ -441,7 +442,7 @@ __STATIC_INLINE void CLK_SysTickDelay(uint32_t us)
 __STATIC_INLINE void CLK_SysTickLongDelay(uint32_t us)
 {
     uint32_t delay;
-        
+
     /* It should <= 233016us for each delay loop */
     delay = 233016UL;
 
@@ -455,8 +456,8 @@ __STATIC_INLINE void CLK_SysTickLongDelay(uint32_t us)
         {
             delay = us;
             us = 0UL;
-        }        
-        
+        }
+
         SysTick->LOAD = delay * CyclesPerUs;
         SysTick->VAL  = (0x0UL);
         SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
@@ -466,9 +467,9 @@ __STATIC_INLINE void CLK_SysTickLongDelay(uint32_t us)
 
         /* Disable SysTick counter */
         SysTick->CTRL = 0UL;
-    
+
     }while(us > 0UL);
-    
+
 }
 
 

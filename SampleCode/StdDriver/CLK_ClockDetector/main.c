@@ -11,7 +11,7 @@
 #include "stdio.h"
 #include "M0564.h"
 
-#define PLLCTL_SETTING  CLK_PLLCTL_72MHz_HXT
+
 #define PLL_CLOCK       72000000
 
 
@@ -46,7 +46,7 @@ void CLKDIRC_IRQHandler(void)
         /* LXT clock fail interrupt is happened */
         printf("LXT Clock is stopped!\n");
 
-        /* Disable HXT clock fail interrupt */
+        /* Disable LXT clock fail interrupt */
         CLK->CLKDCTL &= ~(CLK_CLKDCTL_LXTFIEN_Msk | CLK_CLKDCTL_LXTFDEN_Msk);
 
         /* Write 1 to clear LXT Clock fail interrupt flag */
