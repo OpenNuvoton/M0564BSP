@@ -145,7 +145,7 @@ int main(void)
             {
                 printf("\n RTC initial fail!!");
                 printf("\n Please check h/w setting!!");
-                return -1;
+                goto lexit;
             }
         }
     }
@@ -190,6 +190,10 @@ int main(void)
             u32Sec = u32CurSec;
         }
     }
+
+lexit:
+
+    while(1);
 }
 
 /*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

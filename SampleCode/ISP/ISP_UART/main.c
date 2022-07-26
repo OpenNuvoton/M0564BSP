@@ -98,8 +98,8 @@ int32_t main(void)
 
     /* Wait for CMD_CONNECT command until Systick time-out */
     while (1) {
-        
-        /* Wait for CMD_CONNECT command */         
+
+        /* Wait for CMD_CONNECT command */
         if ((bufhead >= 4) || (bUartDataReady == TRUE)) {
             uint32_t lcmd;
             lcmd = inpw(uart_rcvbuf);

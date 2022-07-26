@@ -3,7 +3,7 @@
  * @version  V3.00
  * $Revision: 5 $
  * $Date: 16/10/17 2:07p $
- * @brief    Show how to wake up system form Power-down mode by UART interrupt.
+ * @brief    Show how to wake up system from Power-down mode by UART interrupt.
  * @note
  * Copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
  *

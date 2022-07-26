@@ -99,7 +99,7 @@ int32_t TIMER_Delay(TIMER_T *timer, uint32_t u32Usec)
     uint32_t u32Clk = TIMER_GetModuleClock(timer);
     uint32_t u32Prescale = 0UL, u32Delay;
     uint32_t u32Cmpr, u32NsecPerTick;
-	uint32_t u32Cntr, i = 0UL;
+    uint32_t u32Cntr, i = 0UL;
 
     /* Clear current timer configuration */
     timer->CTL = 0UL;

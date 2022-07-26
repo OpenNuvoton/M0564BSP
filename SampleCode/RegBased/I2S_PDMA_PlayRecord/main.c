@@ -207,7 +207,7 @@ void SYS_Init(void)
     /* Switch HCLK clock source to HIRC */
     CLK->CLKSEL0 = CLK_CLKSEL0_HCLKSEL_HIRC;
 
-    /* Set PLL to Power-down mode and PLL_STB bit in CLKSTATUS register will be cleared by hardware.*/
+    /* Set PLL to Power-down mode and PLLSTB bit in CLK_STATUS register will be cleared by hardware.*/
     CLK->PLLCTL |= CLK_PLLCTL_PD_Msk;
 
     /* Enable HXT */
@@ -276,7 +276,7 @@ void PDMA_IRQHandler(void)
     {
         if(PDMA_GET_TD_STS() & 0x2)             /* channel 1 done */
         {
-            /* Reset PDMA Scater-Gatter table */
+            /* Reset PDMA Scatter-Gather table */
             PDMA_ResetTxSGTable(u8TxIdx);
             u8TxIdx ^= 1;
             u32PlayReady = 1;
@@ -284,7 +284,7 @@ void PDMA_IRQHandler(void)
         PDMA_CLR_TD_FLAG(PDMA_TDSTS_TDIF1_Msk);
         if(PDMA_GET_TD_STS() & 0x4)             /* channel 2 done */
         {
-            /* Reset PDMA Scater-Gatter table */
+            /* Reset PDMA Scatter-Gather table */
             PDMA_ResetRxSGTable(u8RxIdx);
             u8RxIdx ^= 1;
             u32RecReady = 1;

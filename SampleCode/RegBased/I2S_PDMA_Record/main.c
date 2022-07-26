@@ -189,7 +189,7 @@ void SYS_Init(void)
     /* Switch HCLK clock source to HIRC */
     CLK->CLKSEL0 = CLK_CLKSEL0_HCLKSEL_HIRC;
 
-    /* Set PLL to Power-down mode and PLL_STB bit in CLKSTATUS register will be cleared by hardware.*/
+    /* Set PLL to Power-down mode and PLLSTB bit in CLK_STATUS register will be cleared by hardware.*/
     CLK->PLLCTL |= CLK_PLLCTL_PD_Msk;
 
     /* Enable HXT */
@@ -268,7 +268,7 @@ void PDMA_IRQHandler(void)
             }
 
             ++g_count;
-            /* Reset PDMA Scater-Gatter table */
+            /* Reset PDMA Scatter-Gather table */
             PDMA_ResetRxSGTable(u8RxIdx);
             u8RxIdx ^= 1;
         }

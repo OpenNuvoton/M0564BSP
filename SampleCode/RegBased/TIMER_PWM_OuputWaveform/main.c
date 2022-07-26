@@ -109,7 +109,7 @@ int main(void)
 
     printf("\n\nCPU @ %d Hz\n", SystemCoreClock);
     printf("+-----------------------------------------------+\n");
-    printf("|    Timer0~Timer3 PWM Output Duty Sample Code    |\n");
+    printf("|    Timer0~Timer3 PWM Output Duty Sample Code  |\n");
     printf("+-----------------------------------------------+\n\n");
 
     u32Period[0] = 120;

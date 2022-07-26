@@ -381,7 +381,7 @@ void SYS_Init(void)
     /* PDMA Clock Enable */
     CLK->AHBCLK |= CLK_AHBCLK_PDMACKEN_Msk;
 
-    /* Select UART module clock source as HXT and UART module clock divider as 1 */
+    /* Select UART module clock source as HXT */
     CLK->CLKSEL1 &= ~CLK_CLKSEL1_UARTSEL_Msk;
     CLK->CLKSEL1 |= CLK_CLKSEL1_UARTSEL_HXT;
 
@@ -598,7 +598,7 @@ int32_t main(void)
         if(--u32TimeOutCnt == 0)
         {
             printf("Wait for PDMA transfer done time-out!\n");
-            return -1;
+            goto lexit;
         }
     }
     g_u32IsTestOver = 0;
@@ -610,7 +610,7 @@ int32_t main(void)
         if(--u32TimeOutCnt == 0)
         {
             printf("Wait for I2C bus become free time-out!\n");
-            return -1;
+            goto lexit;
         }
     }
 
@@ -644,7 +644,7 @@ int32_t main(void)
         if(--u32TimeOutCnt == 0)
         {
             printf("Wait for I2C time-out!\n");
-            return -1;
+            goto lexit;
         }
     }
 
@@ -658,7 +658,7 @@ int32_t main(void)
         if(--u32TimeOutCnt == 0)
         {
             printf("Wait for PDMA receive done time-out!\n");
-            return -1;
+            goto lexit;
         }
     }
 
@@ -675,7 +675,7 @@ int32_t main(void)
         if(--u32TimeOutCnt == 0)
         {
             printf("Wait for I2C Rx time-out!\n");
-            return -1;
+            goto lexit;
         }
     }
 
@@ -694,6 +694,8 @@ int32_t main(void)
         printf("I2C0 PDMA receive data fail...\n");
     else
         printf("I2C0 PDMA Tx/Rx data pass...\n");
+
+lexit:
 
     while(1);
 }

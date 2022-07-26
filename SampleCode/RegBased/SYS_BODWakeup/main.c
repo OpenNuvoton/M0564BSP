@@ -4,7 +4,7 @@
  * $Revision: 3 $
  * $Date: 16/10/17 2:05p $
  * @brief
- *           Show how to wake up system form Power-down mode by brown-out detector interrupt.
+ *           Show how to wake up system from Power-down mode by brown-out detector interrupt.
  *
  * @note
  * Copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
