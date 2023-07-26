@@ -22,6 +22,8 @@
 
 #define FUN_TBL_BASE        0x00100E00
 
+void ProcessHardFault(void){};
+
 int32_t IAP_Func0(int32_t n);
 int32_t IAP_Func1(int32_t n);
 int32_t IAP_Func2(int32_t n);

@@ -15,10 +15,10 @@
 
 #if defined ( __GNUC__ )
 #define printf PutString
+void ProcessHardFault(void){};
 #else
 char GetChar(void);
 #endif
-
 
 void SYS_Init(void)
 {
