@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>UART_AutoBaudRate_Slave</name>
+	<name>UART_AutoBaudRate_Master</name>
 	<comment></comment>
 	<projects>
 	</projects>

@@ -5,8 +5,9 @@
  * $Date: 16/07/20 1:20p $
  * @brief    Use PDMA channel 2 to transfer data from memory to memory.
  * @note
- * Copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * @copyright SPDX-License-Identifier: Apache-2.0
  *
+ * @copyright Copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
  ******************************************************************************/
 #include <stdio.h>
 #include "M0564.h"

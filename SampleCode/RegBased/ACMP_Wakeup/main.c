@@ -6,7 +6,8 @@
  * $Date: 16/10/17 3:04p $
  * @brief    Show how to wake up MCU from Power-down mode by ACMP wake-up function.
  * @note
- * Copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * @copyright SPDX-License-Identifier: Apache-2.0
+ * @copyright Copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>
 #include "M0564.h"

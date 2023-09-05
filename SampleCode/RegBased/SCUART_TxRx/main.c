@@ -5,7 +5,8 @@
  * $Date: 16/10/17 2:05p $
  * @brief    Show Smartcard UART by connecting PA.0 and PA.1 pins.
  * @note
- * Copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * @copyright SPDX-License-Identifier: Apache-2.0
+ * @copyright Copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
  ******************************************************************************/
 #include <stdio.h>
 #include "M0564.h"
