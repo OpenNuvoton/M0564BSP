@@ -87,7 +87,7 @@ __Vectors:
     .long   Default_Handler 
     .long   Default_Handler
     .long   USCI_IRQHandler 
-
+    .long   Default_Handler
     .long   SC01_IRQHandler  
     .long   ACMP01_IRQHandler 
     .long   PDMA_IRQHandler
