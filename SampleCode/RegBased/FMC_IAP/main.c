@@ -98,6 +98,9 @@ void UART0_Init(void)
 }
 
 
+#if defined ( __ICCARM__ )
+#pragma optimize=low
+#endif
 void FMC_LDROM_Test(void)
 {
     int32_t  i32Err;
