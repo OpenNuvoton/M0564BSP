@@ -2,12 +2,10 @@
  * @file     sc.h
  * @version  V3.00
  * $Revision: 4 $
- * $Date: 16/10/17 2:04p $
- * @brief    M0564 series Smart Card(SC) driver header file
+ * @brief    Smartcard(SC) driver header file
  *
- * @note
  * @copyright SPDX-License-Identifier: Apache-2.0
- * @copyright Copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * @copyright Copyright (C) 2024 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 #ifndef __SC_H__
 #define __SC_H__
@@ -29,27 +27,28 @@ extern "C"
 /** @addtogroup SC_EXPORTED_CONSTANTS SC Exported Constants
   @{
 */
-#define SC_INTERFACE_NUM            2                /*!< Smartcard interface numbers */
-#define SC_PIN_STATE_HIGH           1                /*!< Smartcard pin status high   */
-#define SC_PIN_STATE_LOW            0                /*!< Smartcard pin status low    */
-#define SC_PIN_STATE_IGNORE         0xFFFFFFFF       /*!< Ignore pin status           */
-#define SC_CLK_ON                   1                /*!< Smartcard clock on          */
-#define SC_CLK_OFF                  0                /*!< Smartcard clock off         */
+#define SC_INTERFACE_NUM                (3UL)               /*!< Smartcard interface numbers \hideinitializer */
+#define SC_PIN_STATE_HIGH               (1UL)               /*!< Smartcard pin status high   \hideinitializer */
+#define SC_PIN_STATE_LOW                (0UL)               /*!< Smartcard pin status low    \hideinitializer */
+#define SC_PIN_STATE_IGNORE             (0xFFFFFFFFUL)      /*!< Ignore pin status           \hideinitializer */
+#define SC_CLK_ON                       (1UL)               /*!< Smartcard clock on          \hideinitializer */
+#define SC_CLK_OFF                      (0UL)               /*!< Smartcard clock off         \hideinitializer */
 
-#define SC_TMR_MODE_0               (0ul << SC_TMRCTL0_OPMODE_Pos)     /*!< Timer Operation Mode 0, down count                                                      */
-#define SC_TMR_MODE_1               (1ul << SC_TMRCTL0_OPMODE_Pos)     /*!< Timer Operation Mode 1, down count, start after detect start bit                        */
-#define SC_TMR_MODE_2               (2ul << SC_TMRCTL0_OPMODE_Pos)     /*!< Timer Operation Mode 2, down count, start after receive start bit                       */
-#define SC_TMR_MODE_3               (3ul << SC_TMRCTL0_OPMODE_Pos)     /*!< Timer Operation Mode 3, down count, use for activation, only timer 0 support this mode  */
-#define SC_TMR_MODE_4               (4ul << SC_TMRCTL0_OPMODE_Pos)     /*!< Timer Operation Mode 4, down count with reload after timeout                            */
-#define SC_TMR_MODE_5               (5ul << SC_TMRCTL0_OPMODE_Pos)     /*!< Timer Operation Mode 5, down count, start after detect start bit, reload after timeout  */
-#define SC_TMR_MODE_6               (6ul << SC_TMRCTL0_OPMODE_Pos)     /*!< Timer Operation Mode 6, down count, start after receive start bit, reload after timeout */
-#define SC_TMR_MODE_7               (7ul << SC_TMRCTL0_OPMODE_Pos)     /*!< Timer Operation Mode 7, down count, start and reload after detect start bit             */
-#define SC_TMR_MODE_8               (8ul << SC_TMRCTL0_OPMODE_Pos)     /*!< Timer Operation Mode 8, up count                                                        */
-#define SC_TMR_MODE_F               (0xF << SC_TMRCTL0_OPMODE_Pos)     /*!< Timer Operation Mode 15, down count, reload after detect start bit                      */
+#define SC_TMR_MODE_0                   (0UL << SC_TMRCTL0_OPMODE_Pos)      /*!<Timer Operation Mode 0, down count                                                      \hideinitializer */
+#define SC_TMR_MODE_1                   (1UL << SC_TMRCTL0_OPMODE_Pos)      /*!<Timer Operation Mode 1, down count, start after detect start bit                        \hideinitializer */
+#define SC_TMR_MODE_2                   (2UL << SC_TMRCTL0_OPMODE_Pos)      /*!<Timer Operation Mode 2, down count, start after receive start bit                       \hideinitializer */
+#define SC_TMR_MODE_3                   (3UL << SC_TMRCTL0_OPMODE_Pos)      /*!<Timer Operation Mode 3, down count, use for activation, only timer 0 support this mode  \hideinitializer */
+#define SC_TMR_MODE_4                   (4UL << SC_TMRCTL0_OPMODE_Pos)      /*!<Timer Operation Mode 4, down count with reload after timeout                            \hideinitializer */
+#define SC_TMR_MODE_5                   (5UL << SC_TMRCTL0_OPMODE_Pos)      /*!<Timer Operation Mode 5, down count, start after detect start bit, reload after timeout  \hideinitializer */
+#define SC_TMR_MODE_6                   (6UL << SC_TMRCTL0_OPMODE_Pos)      /*!<Timer Operation Mode 6, down count, start after receive start bit, reload after timeout \hideinitializer */
+#define SC_TMR_MODE_7                   (7UL << SC_TMRCTL0_OPMODE_Pos)      /*!<Timer Operation Mode 7, down count, start and reload after detect start bit             \hideinitializer */
+#define SC_TMR_MODE_8                   (8UL << SC_TMRCTL0_OPMODE_Pos)      /*!<Timer Operation Mode 8, up count                                                        \hideinitializer */
+#define SC_TMR_MODE_F                   (0xFUL << SC_TMRCTL0_OPMODE_Pos)    /*!<Timer Operation Mode 15, down count, reload after detect start bit                      \hideinitializer */
 
 #define SC_TIMEOUT                  (SystemCoreClock)   /*!< SC time-out counter (1 second time-out) */
 
 /*@}*/ /* end of group SC_EXPORTED_CONSTANTS */
+
 
 /** @addtogroup SC_EXPORTED_FUNCTIONS SC Exported Functions
   @{
@@ -242,6 +241,15 @@ extern "C"
   */
 #define SC_SET_STOP_BIT_LEN(sc, u32Len) ((sc)->CTL = ((sc)->CTL & ~SC_CTL_NSB_Msk) | (((u32Len) == 1)? SC_CTL_NSB_Msk : 0))
 
+
+/*---------------------------------------------------------------------------------------------------------*/
+/* static inline functions                                                                                 */
+/*---------------------------------------------------------------------------------------------------------*/
+/* Declare these inline functions here to avoid MISRA C 2004 rule 8.1 error */
+__STATIC_INLINE void SC_SetTxRetry(SC_T *sc, uint32_t u32Count);
+__STATIC_INLINE void SC_SetRxRetry(SC_T *sc, uint32_t u32Count);
+
+
 /**
   * @brief      Set Tx Error Retry Count
   *
@@ -320,5 +328,3 @@ uint32_t SC_GetInterfaceClock(SC_T *sc);
 #endif
 
 #endif //__SC_H__
-
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/

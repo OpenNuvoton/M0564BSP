@@ -1,13 +1,10 @@
 /**************************************************************************//**
  * @file     sc.c
  * @version  V3.00
- * $Revision: 5 $
- * $Date: 16/10/17 2:04p $
- * @brief    M0564 series Smart Card(SC) driver source file
+ * @brief    Smartcard(SC) driver source file
  *
- * @note
  * @copyright SPDX-License-Identifier: Apache-2.0
- * @copyright Copyright (C) 2016 Nuvoton Technology Corp. All rights reserved.
+ * @copyright Copyright (C) 2024 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include "M0564.h"
 
@@ -15,7 +12,7 @@
 /// @cond HIDDEN_SYMBOLS
 static uint32_t u32CardStateIgnore[SC_INTERFACE_NUM] = {0, 0};
 
-/// @endcond HIDDEN_SYMBOLS
+/** @endcond HIDDEN_SYMBOLS */
 
 /** @addtogroup Standard_Driver Standard Driver
   @{
@@ -30,7 +27,7 @@ static uint32_t u32CardStateIgnore[SC_INTERFACE_NUM] = {0, 0};
 */
 
 /**
-  * @brief      Check Smartcard Slot Status
+  * @brief      Indicates specified smartcard slot status
   *
   * @param[in]  sc      The pointer of smartcard module.
   *
@@ -66,6 +63,12 @@ uint32_t SC_IsCardInserted(SC_T *sc)
   */
 void SC_ClearFIFO(SC_T *sc)
 {
+    uint32_t u32TimeOutCount = SC_TIMEOUT;
+
+    while((sc->ALTCTL & SC_ALTCTL_SYNC_Msk) == SC_ALTCTL_SYNC_Msk)
+    {
+        if(--u32TimeOutCount == 0) break;
+    }
     sc->ALTCTL |= (SC_ALTCTL_TXRST_Msk | SC_ALTCTL_RXRST_Msk);
 }
 
@@ -138,7 +141,7 @@ void SC_Open(SC_T *sc, uint32_t u32CD, uint32_t u32PWR)
     u32TimeOutCnt = SC_TIMEOUT;
     while(sc->CTL & SC_CTL_SYNC_Msk)
         if(--u32TimeOutCnt == 0) break;
-    sc->CTL = SC_CTL_SCEN_Msk | u32Reg;
+    sc->CTL = SC_CTL_SCEN_Msk | SC_CTL_TMRSEL_Msk | u32Reg;
 }
 
 /**
@@ -167,13 +170,23 @@ void SC_ResetReader(SC_T *sc)
     u32TimeOutCnt = SC_TIMEOUT;
     while(sc->CTL & SC_CTL_SYNC_Msk)
         if(--u32TimeOutCnt == 0) break;
-    sc->CTL &= ~(SC_CTL_RXTRGLV_Msk | SC_CTL_CDDBSEL_Msk | SC_CTL_TXRTY_Msk | SC_CTL_RXRTY_Msk);
+    sc->CTL &= ~(SC_CTL_RXTRGLV_Msk |
+                 SC_CTL_CDDBSEL_Msk |
+                 SC_CTL_TXRTY_Msk |
+                 SC_CTL_TXRTYEN_Msk |
+                 SC_CTL_RXRTY_Msk |
+                 SC_CTL_RXRTYEN_Msk);
+    u32TimeOutCnt = SC_TIMEOUT;
+    while((sc->CTL & SC_CTL_SYNC_Msk) == SC_CTL_SYNC_Msk)
+    {
+        if(--u32TimeOutCnt == 0) break;
+    }
     /* Enable auto convention, and all three smartcard internal timers */
     sc->CTL |= SC_CTL_AUTOCEN_Msk | SC_CTL_TMRSEL_Msk;
-    /* Disable Rx time-out */
-    sc->RXTOUT = 0;
+    /* Disable Rx timeout */
+    sc->RXTOUT = 0UL;
     /* 372 clocks per ETU by default */
-    sc->ETUCTL = 371;
+    sc->ETUCTL = 371UL;
 
     /* Enable necessary interrupt for smartcard operation */
     if(u32CardStateIgnore[u32Intf])   // Do not enable card detect interrupt if card present state ignore
@@ -197,8 +210,6 @@ void SC_ResetReader(SC_T *sc)
                      SC_INTEN_ACERRIEN_Msk |
                      SC_INTEN_CDIEN_Msk);
     }
-
-    return;
 }
 
 /**
@@ -213,7 +224,7 @@ void SC_ResetReader(SC_T *sc)
   */
 void SC_SetBlockGuardTime(SC_T *sc, uint32_t u32BGT)
 {
-    sc->CTL = (sc->CTL & ~SC_CTL_BGT_Msk) | ((u32BGT - 1) << SC_CTL_BGT_Pos);
+    sc->CTL = (sc->CTL & ~SC_CTL_BGT_Msk) | ((u32BGT - 1UL) << SC_CTL_BGT_Pos);
 }
 
 /**
@@ -230,7 +241,7 @@ void SC_SetBlockGuardTime(SC_T *sc, uint32_t u32BGT)
 void SC_SetCharGuardTime(SC_T *sc, uint32_t u32CGT)
 {
     /* CGT is "START bit" + "8-bits" + "Parity bit" + "STOP bit(s)" + "EGT counts" */
-    u32CGT -= (sc->CTL & SC_CTL_NSB_Msk) ? 11 : 12;
+    u32CGT -= ((sc->CTL & SC_CTL_NSB_Msk) == SC_CTL_NSB_Msk) ? 11UL : 12UL;
     sc->EGT = u32CGT;
 }
 
@@ -246,6 +257,12 @@ void SC_SetCharGuardTime(SC_T *sc, uint32_t u32CGT)
   */
 void SC_StopAllTimer(SC_T *sc)
 {
+    uint32_t u32TimeOutCount = SC_TIMEOUT;
+
+    while((sc->ALTCTL & SC_ALTCTL_SYNC_Msk) == SC_ALTCTL_SYNC_Msk)
+    {
+        if(--u32TimeOutCount == 0) break;
+    }
     sc->ALTCTL &= ~(SC_ALTCTL_CNTEN0_Msk | SC_ALTCTL_CNTEN1_Msk | SC_ALTCTL_CNTEN2_Msk);
 }
 
@@ -277,19 +294,40 @@ void SC_StopAllTimer(SC_T *sc)
 void SC_StartTimer(SC_T *sc, uint32_t u32TimerCh, uint32_t u32Mode, uint32_t u32ETUCount)
 {
     uint32_t reg = u32Mode | (SC_TMRCTL0_CNT_Msk & (u32ETUCount - 1));
+    uint32_t u32TimeOutCount = 0UL;
 
+    u32TimeOutCount = SC_TIMEOUT;
+    while((sc->ALTCTL & SC_ALTCTL_SYNC_Msk) == SC_ALTCTL_SYNC_Msk)
+    {
+        if(--u32TimeOutCount == 0UL) break;
+    }
     if(u32TimerCh == 0)         // timer 0
     {
+        u32TimeOutCount = SC_TIMEOUT;
+        while((sc->TMRCTL0 & SC_TMRCTL0_SYNC_Msk) == SC_TMRCTL0_SYNC_Msk)
+        {
+            if(--u32TimeOutCount == 0UL) break;
+        }
         sc->TMRCTL0 = reg;
         sc->ALTCTL |= SC_ALTCTL_CNTEN0_Msk;
     }
     else if(u32TimerCh == 1)    // timer 1
     {
+        u32TimeOutCount = SC_TIMEOUT;
+        while((sc->TMRCTL1 & SC_TMRCTL1_SYNC_Msk) == SC_TMRCTL1_SYNC_Msk)
+        {
+            if(--u32TimeOutCount == 0UL) break;
+        }
         sc->TMRCTL1 = reg;
         sc->ALTCTL |= SC_ALTCTL_CNTEN1_Msk;
     }
     else                        // timer 2
     {
+        u32TimeOutCount = SC_TIMEOUT;
+        while((sc->TMRCTL2 & SC_TMRCTL2_SYNC_Msk) == SC_TMRCTL2_SYNC_Msk)
+        {
+            if(--u32TimeOutCount == 0UL) break;
+        }
         sc->TMRCTL2 = reg;
         sc->ALTCTL |= SC_ALTCTL_CNTEN2_Msk;
     }
@@ -308,6 +346,12 @@ void SC_StartTimer(SC_T *sc, uint32_t u32TimerCh, uint32_t u32Mode, uint32_t u32
   */
 void SC_StopTimer(SC_T *sc, uint32_t u32TimerCh)
 {
+    uint32_t u32TimeOutCount = SC_TIMEOUT;
+
+    while(sc->ALTCTL & SC_ALTCTL_SYNC_Msk)
+    {
+        if(--u32TimeOutCount == 0UL) break;
+    }
     if(u32TimerCh == 0)         // timer 0
         sc->ALTCTL &= ~SC_ALTCTL_CNTEN0_Msk;
     else if(u32TimerCh == 1)    // timer 1
@@ -322,6 +366,8 @@ void SC_StopTimer(SC_T *sc, uint32_t u32TimerCh)
   * @param[in]  sc          The pointer of smartcard module.
   *
   * @return     Smartcard frequency in kHZ.
+  *
+  * @details    This function is used to get specified smartcard module clock frequency in kHz.
   */
 uint32_t SC_GetInterfaceClock(SC_T *sc)
 {
@@ -362,5 +408,3 @@ uint32_t SC_GetInterfaceClock(SC_T *sc)
 /*@}*/ /* end of group SC_Driver */
 
 /*@}*/ /* end of group Standard_Driver */
-
-/*** (C) COPYRIGHT 2016 Nuvoton Technology Corp. ***/
