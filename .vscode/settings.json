@@ -1,0 +1,8 @@
+{
+    "C_Cpp.default.includePath": [
+        "Library\\CMSIS\\Include",
+        "Library\\Device\\Nuvoton\\M0564\\Include",
+        "Library\\SmartcardLib\\Include",
+        "Library\\StdDriver\\inc"
+    ]
+}
