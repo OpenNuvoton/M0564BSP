@@ -21,20 +21,20 @@
 /*---------------------------------------------------------------------------------------------------------*/
 volatile uint8_t g_u8DeviceHAddr;
 volatile uint8_t g_u8DeviceLAddr;
-uint8_t g_u8SlvData[256];
-uint8_t g_u8DeviceAddr;
-uint8_t g_au8TxData[3];
+volatile uint8_t g_u8SlvData[256];
+volatile uint8_t g_u8DeviceAddr;
+volatile uint8_t g_au8TxData[3];
 volatile uint8_t g_u8RxData;
 volatile uint8_t g_u8DataLenM;
 volatile uint8_t g_u8EndFlagM = 0;
 volatile uint32_t slave_buff_addr;
-uint8_t g_au8RxData[4];
+volatile uint8_t g_au8RxData[4];
 volatile uint16_t g_u16RecvAddr;
 volatile uint8_t g_u8DataLenM;
 volatile uint8_t g_u8DataLenS;
 
-enum UI2C_MASTER_EVENT m_Event;
-enum UI2C_SLAVE_EVENT s_Event;
+volatile enum UI2C_MASTER_EVENT m_Event;
+volatile enum UI2C_SLAVE_EVENT s_Event;
 
 typedef void (*UI2C_FUNC)(uint32_t u32Status);
 

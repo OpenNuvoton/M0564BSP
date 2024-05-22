@@ -25,7 +25,7 @@ volatile uint8_t g_au8SlvRxData[4] = {0};
 volatile uint16_t g_u16RecvAddr;
 volatile uint8_t g_u8SlvDataLen;
 
-enum UI2C_SLAVE_EVENT s_Event;
+volatile enum UI2C_SLAVE_EVENT s_Event;
 
 typedef void (*UI2C_FUNC)(uint32_t u32Status);
 static volatile UI2C_FUNC s_UI2C0HandlerFn = NULL;
@@ -55,6 +55,7 @@ void UI2C_LB_SlaveTRx(uint32_t u32Status)
         UI2C_CLR_PROT_INT_FLAG(UI2C0, UI2C_PROTSTS_STARIF_Msk);
 
         /* Event process */
+        g_u8SlvDataLen = 0;
         s_Event = SLAVE_ADDRESS_ACK;
 
         /* Trigger USCI I2C */
@@ -69,22 +70,23 @@ void UI2C_LB_SlaveTRx(uint32_t u32Status)
         if(s_Event == SLAVE_ADDRESS_ACK)                                                    /* Address Data has been received */
         {
             /* Check address if match address 0 or address 1*/
-            if((UI2C0->ADMAT & UI2C_ADMAT_ADMAT0_Msk) == UI2C_ADMAT_ADMAT0_Msk)
-            {
-                /* Address 0 match */
-                UI2C0->ADMAT = UI2C_ADMAT_ADMAT0_Msk;
-            }
-            else if((UI2C0->ADMAT & UI2C_ADMAT_ADMAT1_Msk) == UI2C_ADMAT_ADMAT1_Msk)
-            {
-                /* Address 1 match */
-                UI2C0->ADMAT = UI2C_ADMAT_ADMAT1_Msk;
-            }
-            else
-            {
-                printf("No Address Match!!!\n");
-                while(1);
-            }
+            // if((UI2C0->ADMAT & UI2C_ADMAT_ADMAT0_Msk) == UI2C_ADMAT_ADMAT0_Msk)
+            // {
+            //     /* Address 0 match */
+            //     UI2C0->ADMAT = UI2C_ADMAT_ADMAT0_Msk;
+            // }
+            // else if((UI2C0->ADMAT & UI2C_ADMAT_ADMAT1_Msk) == UI2C_ADMAT_ADMAT1_Msk)
+            // {
+            //     /* Address 1 match */
+            //     UI2C0->ADMAT = UI2C_ADMAT_ADMAT1_Msk;
+            // }
+            // else
+            // {
+            //     printf("No Address Match!!!\n");
+            //     while(1);
+            // }
 
+            g_u8SlvDataLen = 0;                                                             /* Slave address write has been received */
             /* USCI I2C receives Slave command type */
             if((UI2C0->PROTSTS & UI2C_PROTSTS_SLAREAD_Msk) == UI2C_PROTSTS_SLAREAD_Msk)
             {
@@ -94,7 +96,6 @@ void UI2C_LB_SlaveTRx(uint32_t u32Status)
             }
             else
             {
-                g_u8SlvDataLen = 0;                                                         /* Slave address write has been received */
                 s_Event = SLAVE_GET_DATA;
             }
 
@@ -126,7 +127,7 @@ void UI2C_LB_SlaveTRx(uint32_t u32Status)
             UI2C0->TXDAT = g_au8SlvData[slave_buff_addr];
             slave_buff_addr++;
 
-            if(slave_buff_addr > 256)
+            if(slave_buff_addr == 256)
             {
                 slave_buff_addr = 0;
             }
@@ -221,12 +222,12 @@ void UI2C0_Init(uint32_t u32ClkSpeed)
     printf("UI2C0 clock %d Hz\n", UI2C_GetBusClockFreq(UI2C0));
 
     /* Set UI2C0 Slave Addresses */
-    UI2C_SetSlaveAddr(UI2C0, 0, 0x15, UI2C_GCMODE_DISABLE);   /* Slave Address : 0x15 */
-    UI2C_SetSlaveAddr(UI2C0, 1, 0x35, UI2C_GCMODE_DISABLE);   /* Slave Address : 0x35 */
+    UI2C_SetSlaveAddr(UI2C0, 0, 0x16, UI2C_GCMODE_DISABLE);   /* Slave Address : 0x16 */
+    UI2C_SetSlaveAddr(UI2C0, 1, 0x36, UI2C_GCMODE_DISABLE);   /* Slave Address : 0x36 */
 
     /* Set UI2C0 Slave Addresses Mask */
-    UI2C_SetSlaveAddrMask(UI2C0, 0, 0x01);                    /* Slave Address : 0x1 */
-    UI2C_SetSlaveAddrMask(UI2C0, 1, 0x04);                    /* Slave Address : 0x4 */
+    UI2C_SetSlaveAddrMask(UI2C0, 0, 0x04);                    /* Slave Address : 0x4 */
+    UI2C_SetSlaveAddrMask(UI2C0, 1, 0x02);                    /* Slave Address : 0x2 */
 
     /* Enable UI2C0 protocol interrupt */
     UI2C_ENABLE_PROT_INT(UI2C0, (UI2C_PROTIEN_ACKIEN_Msk | UI2C_PROTIEN_NACKIEN_Msk | UI2C_PROTIEN_STORIEN_Msk | UI2C_PROTIEN_STARIEN_Msk));

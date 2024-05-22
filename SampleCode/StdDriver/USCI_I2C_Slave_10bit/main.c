@@ -25,7 +25,7 @@ volatile uint8_t g_au8SlvRxData[4];
 volatile uint16_t g_u16SlvRcvAddr;
 volatile uint8_t g_u8SlvDataLen;
 
-enum UI2C_SLAVE_EVENT s_Event;
+volatile enum UI2C_SLAVE_EVENT s_Event;
 
 typedef void (*UI2C_FUNC)(uint32_t u32Status);
 

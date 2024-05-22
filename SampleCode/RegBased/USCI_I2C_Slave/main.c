@@ -26,7 +26,7 @@ volatile uint8_t g_au8SlvRxData[4] = {0};
 volatile uint16_t g_u16RecvAddr;
 volatile uint8_t g_u8SlvDataLen;
 
-enum UI2C_SLAVE_EVENT s_Event;
+volatile enum UI2C_SLAVE_EVENT s_Event;
 
 typedef void (*UI2C_FUNC)(uint32_t u32Status);
 
@@ -57,10 +57,12 @@ void UI2C_LB_SlaveTRx(uint32_t u32Status)
         UI2C_CLR_PROT_INT_FLAG(UI2C0, UI2C_PROTSTS_STARIF_Msk);
 
         /* Event process */
+        g_u8SlvDataLen = 0;
         s_Event = SLAVE_ADDRESS_ACK;
+        UI2C_SET_CONTROL_REG(UI2C0, UI2C_CTL_AA);
 
         /* Trigger UI2C0 */
-        UI2C_SET_CONTROL_REG(UI2C0, (UI2C_CTL_PTRG | UI2C_CTL_AA));
+        UI2C0->PROTCTL |= UI2C_PROTCTL_PTRG_Msk;
     }
     else if((u32Status & UI2C_PROTSTS_ACKIF_Msk) == UI2C_PROTSTS_ACKIF_Msk)             /* USCI I2C Bus have been received ACK */
     {

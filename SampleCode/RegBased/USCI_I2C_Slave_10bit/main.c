@@ -18,13 +18,13 @@
 /*---------------------------------------------------------------------------------------------------------*/
 /* Global variables                                                                                        */
 /*---------------------------------------------------------------------------------------------------------*/
-uint8_t g_u8SlvData[256];
+volatile uint8_t g_u8SlvData[256];
 volatile uint32_t slave_buff_addr;
-uint8_t g_au8RxData[4];
+volatile uint8_t g_au8RxData[4];
 volatile uint16_t g_u16RecvAddr;
 volatile uint8_t g_u8DataLenS;
 
-enum UI2C_SLAVE_EVENT s_Event;
+volatile enum UI2C_SLAVE_EVENT s_Event;
 
 typedef void (*UI2C_FUNC)(uint32_t u32Status);
 

@@ -129,7 +129,7 @@ int main()
     UI2C0_Init(100000);
 
     /* Slave address */
-    g_u8DeviceAddr = 0x15;
+    g_u8DeviceAddr = 0x16;
 
     for(i = 0; i<256; i++)
     {

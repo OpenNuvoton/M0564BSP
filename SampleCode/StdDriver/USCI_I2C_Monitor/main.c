@@ -71,17 +71,17 @@ uint8_t g_u8RxDataTmp;
 uint8_t g_u8SlvData[256];
 
 
-enum UI2C_MASTER_EVENT m_Event;
-enum UI2C_SLAVE_EVENT s_Event;
-enum UI2C_Monitor_State Mon_Event;
+volatile enum UI2C_MASTER_EVENT m_Event;
+volatile enum UI2C_SLAVE_EVENT s_Event;
+volatile enum UI2C_Monitor_State Mon_Event;
 
 typedef void (*I2C_FUNC)(uint32_t u32Status);
-static I2C_FUNC s_I2C0HandlerFn = NULL;
-static I2C_FUNC s_I2C1HandlerFn = NULL;
+static volatile I2C_FUNC s_I2C0HandlerFn = NULL;
+static volatile I2C_FUNC s_I2C1HandlerFn = NULL;
 
 typedef void (*UI2C_FUNC)(uint32_t u32Status);
-static UI2C_FUNC s_UI2C0HandlerFn = NULL;
-static UI2C_FUNC s_UI2C1HandlerFn = NULL;
+static volatile UI2C_FUNC s_UI2C0HandlerFn = NULL;
+static volatile UI2C_FUNC s_UI2C1HandlerFn = NULL;
 /*---------------------------------------------------------------------------------------------------------*/
 /*  USCI_I2C IRQ Handler                                                                                   */
 /*---------------------------------------------------------------------------------------------------------*/
