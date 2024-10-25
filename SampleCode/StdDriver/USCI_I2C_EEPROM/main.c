@@ -238,6 +238,7 @@ void UI2C0_Init(void)
 
 int main()
 {
+    uint8_t u8TxData;
     uint32_t i, u32TimeOutCnt;
 
     /* Unlock protected registers */
@@ -319,7 +320,8 @@ int main()
         g_u8EndFlagM = 0;
 
         /* Compare data */
-        if(g_u8RxData != g_au8TxData[2])
+        u8TxData = g_au8TxData[2];
+        if(g_u8RxData != u8TxData)
         {
             printf("USCI_I2C Byte Write/Read Failed, Data 0x%x\n", g_u8RxData);
             goto lexit;
